@@ -42,20 +42,17 @@ public class Receiver {
         byte[] encryptedData = Util.base64Decoder(src);
         int inputLen = encryptedData.length;
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-        int offSet = 0;
         byte[] cache;
-        int i = 0;
         // 对数据分段解密
-        while (inputLen - offSet > 0) {
+        for (int i = 0, offSet = 0; inputLen - offSet > 0; i++, offSet = i * Util.MAX_DECRYPT_BLOCK) {
             if (inputLen - offSet > Util.MAX_DECRYPT_BLOCK) {
                 cache = cipher.doFinal(encryptedData, offSet, Util.MAX_DECRYPT_BLOCK);
             } else {
                 cache = cipher.doFinal(encryptedData, offSet, inputLen - offSet);
             }
             out.write(cache, 0, cache.length);
-            i++;
-            offSet = i * Util.MAX_DECRYPT_BLOCK;
         }
+
         byte[] decryptedData = out.toByteArray();
         out.close();
         String res = new String(decryptedData);

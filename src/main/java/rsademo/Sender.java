@@ -71,19 +71,15 @@ public class Sender {
         byte[] data = src.getBytes();
         int inputLen = data.length;
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-        int offSet = 0;
         byte[] cache;
-        int i = 0;
         // 对数据分段加密
-        while (inputLen - offSet > 0) {
+        for (int i = 0, offSet = 0; inputLen - offSet > 0; i++, offSet = i * Util.MAX_ENCRYPT_BLOCK) {
             if (inputLen - offSet > Util.MAX_ENCRYPT_BLOCK) {
                 cache = cipher.doFinal(data, offSet, Util.MAX_ENCRYPT_BLOCK);
             } else {
                 cache = cipher.doFinal(data, offSet, inputLen - offSet);
             }
             out.write(cache, 0, cache.length);
-            i++;
-            offSet = i * Util.MAX_ENCRYPT_BLOCK;
         }
         byte[] result = out.toByteArray();
         out.close();
